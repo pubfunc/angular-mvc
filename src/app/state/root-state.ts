@@ -1,3 +1,3 @@
-import { State } from "./state";
+import { State } from './state';
 
-export const RootState = new State();
+export const RootState = new State<Record<string, any>>({});

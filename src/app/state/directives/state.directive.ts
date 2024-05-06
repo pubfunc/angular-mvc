@@ -1,10 +1,6 @@
-import { Directive } from "@angular/core";
-
+import { Directive } from '@angular/core';
 
 @Directive({
-    selector: '[xState]',
+  selector: '[xState]',
 })
-export class StateDirective {
-
-}
-
+export class StateDirective {}
