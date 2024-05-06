@@ -2,6 +2,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { StateSlice } from './state-slice';
 
 export interface IState<TValue> {
+  readonly path: string;
   observe(): Observable<TValue | null | undefined>;
   get(): TValue | null | undefined;
   set(value: TValue): void;
@@ -15,6 +16,7 @@ export interface IState<TValue> {
 }
 
 export class State<TValue extends Record<string, any> = Record<string, any>> {
+  readonly path = '$';
   private readonly value$: BehaviorSubject<TValue>;
 
   constructor(initialValue: TValue) {
@@ -26,6 +28,7 @@ export class State<TValue extends Record<string, any> = Record<string, any>> {
   }
 
   get(): TValue | null | undefined {
+    console.log('State.get');
     return this.value$.getValue();
   }
 
@@ -44,7 +47,7 @@ export class State<TValue extends Record<string, any> = Record<string, any>> {
   }
 
   slice<TPath extends keyof TValue = keyof TValue>(
-    path: TPath,
+    path: TPath & string,
   ): IState<TValue[TPath]> {
     return new StateSlice<TValue, TPath>(this, path);
   }

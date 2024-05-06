@@ -1,16 +1,24 @@
 <h1>Angular MVC</h1>
 
-<h2>Root State</h2>
-<pre><code>{{ state.get() | json }}</code></pre>
+<div class="panel-layout">
+  <div class="panel">
+    <button (click)="addItem()">Add Item</button>
+    <button (click)="clearItems()">Clear Items</button>
+  </div>
 
-<ng-container xState="list" #listState="xState">
-  <h2>List (state export)</h2>
-  <pre><code>{{ listState.get() | json }}</code></pre>
-</ng-container>
+  <div class="panel">
+    <ng-template xState="list" let-list>
+      <h2>{{ list?.title }}</h2>
 
-<ng-template xState="list" let-ls>
-  <h2>List (state template)</h2>
-  <pre><code>{{ ls.get() | json }}</code></pre>
-</ng-template>
-
-<button (click)="addItem()">Add Item</button>
+      <ng-container *xState="'items'; let items">
+        @for (item of items; track item.id) {
+          <div>{{ item.name }}</div>
+        }
+      </ng-container>
+    </ng-template>
+  </div>
+  <div class="panel">
+    <h2>Root State</h2>
+    <pre><code>{{ state.get() | json }}</code></pre>
+  </div>
+</div>

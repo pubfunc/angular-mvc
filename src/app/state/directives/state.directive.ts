@@ -1,6 +1,8 @@
 import {
   Directive,
+  EmbeddedViewRef,
   Input,
+  OnDestroy,
   OnInit,
   Optional,
   SkipSelf,
@@ -8,11 +10,11 @@ import {
   ViewContainerRef,
   forwardRef,
 } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { IState, State } from '../state';
 
 export type StateDirectiveTemplateValue<TValue> = {
-  $implicit: IState<TValue> | undefined;
+  $implicit: TValue | null | undefined;
 };
 
 @Directive({
@@ -26,15 +28,27 @@ export type StateDirectiveTemplateValue<TValue> = {
   ],
 })
 export class StateDirective<TValue extends Record<string, any>>
-  implements IState<TValue>, OnInit
+  implements IState<TValue>, OnInit, OnDestroy
 {
   state: IState<TValue> | undefined;
   context: StateDirectiveTemplateValue<TValue> = { $implicit: undefined };
+  subscription: Subscription | undefined;
+  embeddedView:
+    | EmbeddedViewRef<StateDirectiveTemplateValue<TValue>>
+    | undefined;
 
   @Input('xState')
   set statePath(path: string) {
     this.state = this.parentState.slice(path);
-    this.context.$implicit = this.state;
+    this.subscription?.unsubscribe();
+    this.subscription = this.state.observe().subscribe((state) => {
+      this.context.$implicit = state;
+      this.embeddedView?.markForCheck();
+    });
+  }
+
+  get path() {
+    return this.state?.path ?? '?';
   }
 
   constructor(
@@ -50,8 +64,15 @@ export class StateDirective<TValue extends Record<string, any>>
   ngOnInit(): void {
     console.log('StateDirective.ngOnInit', this);
     if (this.templateRef) {
-      this.viewContainer.createEmbeddedView(this.templateRef, this.context);
+      this.embeddedView = this.viewContainer.createEmbeddedView(
+        this.templateRef,
+        this.context,
+      );
     }
+  }
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
   }
 
   observe(): Observable<TValue | null | undefined> {
@@ -82,5 +103,12 @@ export class StateDirective<TValue extends Record<string, any>>
   ): IState<TValue[TPath]> {
     if (!this.state) throw new Error('StateDirective state not initialized');
     return this.state.slice(path);
+  }
+
+  static ngTemplateContextGuard<T extends Record<string, any>>(
+    directive: StateDirective<T>,
+    context: unknown,
+  ): context is StateDirectiveTemplateValue<T> {
+    return true;
   }
 }

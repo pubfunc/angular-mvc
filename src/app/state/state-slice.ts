@@ -9,7 +9,7 @@ export class StateSlice<
 {
   constructor(
     private readonly parentState: IState<TParentValue>,
-    private readonly path: TSlicePath,
+    public readonly path: TSlicePath & string,
   ) {}
 
   observe(): Observable<TSliceValue | null | undefined> {
@@ -40,7 +40,7 @@ export class StateSlice<
   }
 
   slice<TPath extends keyof TSliceValue = keyof TSliceValue>(
-    path: TPath,
+    path: TPath & string,
   ): IState<TSliceValue[TPath]> {
     return new StateSlice<TSliceValue, TPath>(this, path);
   }

@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ComponentState } from './state/component-state';
-import { RootState } from './state/root-state';
 import { State } from './state/state';
 import { StateModule } from './state/state.module';
 
@@ -15,22 +14,41 @@ import { StateModule } from './state/state.module';
   providers: [
     {
       provide: State,
-      useValue: RootState,
+      useValue: new State({
+        list: {
+          title: 'Some list',
+          items: [],
+        },
+      }),
     },
     {
       provide: ComponentState,
-      useValue: new ComponentState(RootState),
+      useFactory: (state: State) => new ComponentState(state),
+      deps: [State],
     },
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
   title = 'angular-mvc';
   constructor(public state: State) {}
 
   addItem() {
-    this.state.patch('list', [
-      ...(this.state.get()?.['list'] ?? []),
-      { id: '123', name: 'Some item' },
-    ]);
+    setTimeout(() => {
+      const list = this.state.slice('list');
+
+      list.patch('items', [
+        ...list.get()?.['items'],
+        { id: '123', name: 'Some item' },
+      ]);
+    }, 300);
+  }
+
+  clearItems() {
+    setTimeout(() => {
+      const list = this.state.slice('list');
+
+      list.patch('items', []);
+    }, 300);
   }
 }
