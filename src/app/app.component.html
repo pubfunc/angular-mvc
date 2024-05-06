@@ -1,1 +1,16 @@
 <h1>Angular MVC</h1>
+
+<h2>Root State</h2>
+<pre><code>{{ state.get() | json }}</code></pre>
+
+<ng-container xState="list" #listState="xState">
+  <h2>List (state export)</h2>
+  <pre><code>{{ listState.get() | json }}</code></pre>
+</ng-container>
+
+<ng-template xState="list" let-ls>
+  <h2>List (state template)</h2>
+  <pre><code>{{ ls.get() | json }}</code></pre>
+</ng-template>
+
+<button (click)="addItem()">Add Item</button>

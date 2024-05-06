@@ -1,25 +1,36 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { IState, State } from './state/state';
-import { Observable, Subscriber } from 'rxjs';
+import { ComponentState } from './state/component-state';
 import { RootState } from './state/root-state';
+import { State } from './state/state';
+import { StateModule } from './state/state.module';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, StateModule, CommonModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   providers: [
     {
       provide: State,
-      useValue: RootState
-    }
-  ]
+      useValue: RootState,
+    },
+    {
+      provide: ComponentState,
+      useValue: new ComponentState(RootState),
+    },
+  ],
 })
 export class AppComponent {
   title = 'angular-mvc';
-  constructor(private state: State){}
+  constructor(public state: State) {}
 
-
+  addItem() {
+    this.state.patch('list', [
+      ...(this.state.get()?.['list'] ?? []),
+      { id: '123', name: 'Some item' },
+    ]);
+  }
 }

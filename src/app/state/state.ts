@@ -1,28 +1,36 @@
 import { BehaviorSubject, Observable } from 'rxjs';
+import { StateSlice } from './state-slice';
 
-export interface IState<TValue extends Record<string, any>> {
-  observe(): Observable<TValue>;
+export interface IState<TValue> {
+  observe(): Observable<TValue | null | undefined>;
+  get(): TValue | null | undefined;
   set(value: TValue): void;
-  get(): TValue;
   patch<TPath extends keyof TValue, TNewValue = TValue[TPath]>(
     path: keyof TValue,
     value: TNewValue,
   ): void;
+  slice<TPath extends keyof TValue = keyof TValue>(
+    path: TPath,
+  ): IState<TValue[TPath]>;
 }
 
-export class State<TValue = unknown> {
-  public readonly value$: BehaviorSubject<TValue>;
+export class State<TValue extends Record<string, any> = Record<string, any>> {
+  private readonly value$: BehaviorSubject<TValue>;
 
   constructor(initialValue: TValue) {
     this.value$ = new BehaviorSubject<TValue>(initialValue);
   }
 
-  observe(): Observable<TValue> {
+  observe(): Observable<TValue | null | undefined> {
     return this.value$;
   }
 
-  get(): TValue {
+  get(): TValue | null | undefined {
     return this.value$.getValue();
+  }
+
+  set(value: any): void {
+    this.value$.next(value);
   }
 
   patch<TPath extends keyof TValue, TNewValue = TValue[TPath]>(
@@ -35,7 +43,9 @@ export class State<TValue = unknown> {
     });
   }
 
-  set(value: any): void {
-    this.value$.next(value);
+  slice<TPath extends keyof TValue = keyof TValue>(
+    path: TPath,
+  ): IState<TValue[TPath]> {
+    return new StateSlice<TValue, TPath>(this, path);
   }
 }

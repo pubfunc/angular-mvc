@@ -1,35 +1,47 @@
 import { Observable, map } from 'rxjs';
-import { IState } from './state';
-
-export function path() {}
+import type { IState } from './state';
 
 export class StateSlice<
   TParentValue extends Record<string, any>,
-  TPath extends keyof TParentValue,
-  TSliceValue extends Record<string, any> = TParentValue[TPath],
+  TSlicePath extends keyof TParentValue,
+  TSliceValue extends Record<string, any> = TParentValue[TSlicePath],
 > implements IState<TSliceValue>
 {
   constructor(
-    private readonly path: TPath,
     private readonly parentState: IState<TParentValue>,
+    private readonly path: TSlicePath,
   ) {}
 
-  observe(): Observable<TSliceValue> {
-    return this.parentState.observe().pipe(map((s) => (s ?? {})[this.path]));
+  observe(): Observable<TSliceValue | null | undefined> {
+    return this.parentState.observe().pipe(map((s) => this.get()));
+  }
+
+  get(): TSliceValue | null | undefined {
+    const state = this.parentState.get();
+    return typeof state === 'object' && state !== null
+      ? state[this.path]
+      : undefined;
   }
 
   set(value: TSliceValue) {
     this.parentState.patch(this.path, value);
   }
 
-  get(): TSliceValue {
-    throw new Error('Method not implemented.');
-  }
-
   patch<TPath extends keyof TSliceValue, TNewValue = TSliceValue[TPath]>(
-    path: keyof TSliceValue,
+    path: TPath,
     value: TNewValue,
   ) {
-    throw new Error('Method not implemented.');
+    const patch = {
+      ...(this.get() ?? {}),
+      [path]: value,
+    } as TSliceValue;
+
+    this.set(patch);
+  }
+
+  slice<TPath extends keyof TSliceValue = keyof TSliceValue>(
+    path: TPath,
+  ): IState<TSliceValue[TPath]> {
+    return new StateSlice<TSliceValue, TPath>(this, path);
   }
 }
