@@ -1,0 +1,45 @@
+{
+    "editor.tabSize": 2,
+    "files.eol": "\n",
+    "eslint.run": "onSave",
+    "eslint.options": {
+      "extensions": [".ts", ".html"]
+    },
+    "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact", "html"],
+    "[typescript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+    "[html]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+    "[jsonc]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[scss]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+    "[graphql]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+    "files.watcherExclude": {
+      "**/.git/objects/**": true,
+      "**/.git/subtree-cache/**": true,
+      "**/node_modules/**": true,
+      "**/bazel-out/**": true,
+      "**/dist/**": true,
+      "**/aio/src/generated/**": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/bower_components": true,
+      "**/bazel-out": true,
+      "**/dist": true,
+      "**/aio/src/generated": true,
+      ".history": true
+    },
+    "cSpell.words": ["datasource"]
+  }

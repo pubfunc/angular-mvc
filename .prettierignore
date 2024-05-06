@@ -1,0 +1,6 @@
+package.json
+package-lock.json
+yarn.lock
+dist
+*.generated.ts
+/apps/ecommerce-shop/src/polyfills.ts
