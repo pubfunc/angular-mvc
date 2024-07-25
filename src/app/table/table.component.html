@@ -1,0 +1,18 @@
+<div class="table" cdkScrollable>
+  <div class="thead-row">
+    <div>ID</div>
+    <div>Title</div>
+    <div>Col 1</div>
+    <div>Col 2</div>
+  </div>
+  <div class="tbody-spacer" [style.height]="_spaceStart + 'px'"></div>
+  @for(row of _renderedData; track row.id){
+    <div class="tbody-row">
+      <div>{{ row.id }}</div>
+      <div>{{ row.title }}</div>
+      <div>{{ row.col1 }}</div>
+      <div></div>
+    </div>
+  }
+  <div class="tbody-spacer" [style.height]="_spaceEnd + 'px'"></div>
+</div>

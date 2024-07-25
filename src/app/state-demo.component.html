@@ -1,0 +1,22 @@
+<div class="panel-layout">
+  <div class="panel">
+    <button (click)="addItem()">Add Item</button>
+    <button (click)="clearItems()">Clear Items</button>
+  </div>
+
+  <div class="panel">
+    <ng-template xState="list" let-list>
+      <h2>{{ list?.title }}</h2>
+
+      <ng-container *xState="'items'; let items">
+        @for (item of items; track item.id) {
+          <div>{{ item.name }}</div>
+        }
+      </ng-container>
+    </ng-template>
+  </div>
+  <div class="panel">
+    <h2>Root State</h2>
+    <pre><code>{{ state.get() | json }}</code></pre>
+  </div>
+</div>
